@@ -1,6 +1,26 @@
 import git
 import time
 import sys
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+
+def convert_cert_to_pem(cert_path, output_path):
+    try:
+        with open(cert_path, 'rb') as cert_file:
+            cert_data = cert_file.read()
+            cert = x509.load_der_x509_certificate(cert_data, default_backend())
+
+            with open(output_path, 'wb') as pem_file:
+                pem_file.write(cert.public_bytes(encoding=x509.Encoding.PEM))
+
+        print(f"Certificado convertido para {output_path} com sucesso!")
+    except Exception as e:
+        print(f"Erro ao converter certificado: {e}")
+
+convert_cert_to_pem(r'C:\Users\4063856\Documents\Programação\seu_certificado.crt', r'C:\Users\4063856\Documents\Programação\seu_certificado.pem')
+
+# Definir globalmente a configuração para desativar a verificação SSL
+# git.cmd.GitConfigParser().set("http", "sslVerify", "false")
 
 # Classe de progresso personalizada para acompanhar o progresso do clone
 class CloneProgress(git.remote.RemoteProgress):
@@ -8,16 +28,9 @@ class CloneProgress(git.remote.RemoteProgress):
         if message:
             print(message)
 
-def clone_repository(repo_url, clone_path, cert_path=None, cert_key_path=None):
+def clone_repository(repo_url, clone_path):
     try:
-        if cert_path and cert_key_path:
-            with open(cert_path, 'rb') as cert_file:
-                cert_content = cert_file.read()
-            with open(cert_key_path, 'rb') as cert_key_file:
-                cert_key_content = cert_key_file.read()
-            git.Repo.clone_from(repo_url, clone_path, progress=CloneProgress(), env={"GIT_SSL_CERT": cert_content, "GIT_SSL_CERT_KEY": cert_key_content})
-        else:
-            git.Repo.clone_from(repo_url, clone_path, progress=CloneProgress())
+        git.Repo.clone_from(repo_url, clone_path, progress=CloneProgress())
         print("Clonagem do repositório concluída com sucesso!")
     except git.exc.GitCommandError as e:
         print(f"Erro durante a clonagem do repositório: {e}")
@@ -52,9 +65,9 @@ def store_data_to_txt(data, output_file):
     except Exception as e:
         print(f"Erro ao armazenar os dados no arquivo: {e}")
 
-def main(repo_url, clone_path, branch_name=None, cert_path=None, cert_key_path=None, git_username=None, git_password=None):
+def main(repo_url, clone_path, branch_name=None, git_username=None, git_password=None):
     # Clonar o repositório
-    clone_repository(repo_url, clone_path, cert_path, cert_key_path)
+    clone_repository(repo_url, clone_path)
     
     # Ler os dados do repositório clonado
     data = read_repository_data(clone_path)
@@ -71,16 +84,14 @@ def main(repo_url, clone_path, branch_name=None, cert_path=None, cert_key_path=N
         push_to_repository(clone_path, branch_name, git_username, git_password)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3 or len(sys.argv) > 8:
-        print("Uso: python script.py <url_do_repositorio> <caminho_para_clonar> [nome_da_ramificacao] [caminho_certificado] [caminho_chave_certificado] [git_username] [git_password]")
+    if len(sys.argv) < 3 or len(sys.argv) > 7:
+        print("Uso: python script.py <url_do_repositorio> <caminho_para_clonar> [nome_da_ramificacao] [git_username] [git_password]")
         sys.exit(1)
 
     repo_url = sys.argv[1]
     clone_path = sys.argv[2]
     branch_name = sys.argv[3] if len(sys.argv) >= 4 else None
-    cert_path = sys.argv[4] if len(sys.argv) >= 5 else None
-    cert_key_path = sys.argv[5] if len(sys.argv) >= 6 else None
-    git_username = sys.argv[6] if len(sys.argv) >= 7 else None
-    git_password = sys.argv[7] if len(sys.argv) >= 8 else None
+    git_username = sys.argv[4] if len(sys.argv) >= 5 else None
+    git_password = sys.argv[5] if len(sys.argv) >= 6 else None
 
-    main(repo_url, clone_path, branch_name, cert_path, cert_key_path, git_username, git_password)
+    main(repo_url, clone_path, branch_name, git_username, git_password)
