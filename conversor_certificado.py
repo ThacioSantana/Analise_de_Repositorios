@@ -1,7 +1,7 @@
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 import subprocess
-
+import os
 
 def validate_certificate(cert_path):
     try:
@@ -12,10 +12,12 @@ def validate_certificate(cert_path):
     except Exception as e:
         print(f"Erro ao validar o certificado: {e}")
 
-validate_certificate('repositorios.banese.com.br.crt')
-
 def convert_cert_to_pem(cert_path, output_path):
     try:
+        if os.path.exists(output_path):
+            print("O certificado já foi convertido para PEM.")
+            return
+
         with open(cert_path, 'rb') as cert_file:
             cert_data = cert_file.read()
             cert = x509.load_der_x509_certificate(cert_data, default_backend())
@@ -26,8 +28,6 @@ def convert_cert_to_pem(cert_path, output_path):
         print(f"Certificado convertido para {output_path} com sucesso!")
     except Exception as e:
         print(f"Erro ao converter certificado: {e}")
-
-convert_cert_to_pem(r'C:\Users\4063856\Documents\Programação\repositorios.banese.com.br.crt', r'C:\Users\4063856\Documents\Programação\repositorios.banese.com.br.pem')
 
 def load_certificate_with_openssl(cert_path):
     try:
@@ -45,5 +45,13 @@ def load_certificate_with_openssl(cert_path):
         # Se ocorrer um erro ao chamar o processo
         print(f"Erro ao carregar o certificado com OpenSSL: {e}")
 
-# Substitua 'cert.pem' pelo caminho do seu certificado
-load_certificate_with_openssl('r''C:\Users\4063856\Documents\Programação\repositorio.banese.com.br.crt')
+def main():
+    cert_path = r'C:\Users\4063856\Documents\Programação\repositorios.banese.com.br.crt'
+    pem_output_path = r'C:\Users\4063856\Documents\Programação\repositorios.banese.com.br.pem'
+    
+    validate_certificate(cert_path)
+    convert_cert_to_pem(cert_path, pem_output_path)
+    load_certificate_with_openssl(cert_path)
+
+if __name__ == "__main__":
+    main()
