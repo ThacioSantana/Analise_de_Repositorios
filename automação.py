@@ -1,26 +1,7 @@
 import git
 import time
 import sys
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
-
-def convert_cert_to_pem(cert_path, output_path):
-    try:
-        with open(cert_path, 'rb') as cert_file:
-            cert_data = cert_file.read()
-            cert = x509.load_der_x509_certificate(cert_data, default_backend())
-
-            with open(output_path, 'wb') as pem_file:
-                pem_file.write(cert.public_bytes(encoding=x509.Encoding.PEM))
-
-        print(f"Certificado convertido para {output_path} com sucesso!")
-    except Exception as e:
-        print(f"Erro ao converter certificado: {e}")
-
-convert_cert_to_pem(r'C:\Users\4063856\Documents\Programação\seu_certificado.crt', r'C:\Users\4063856\Documents\Programação\seu_certificado.pem')
-
-# Definir globalmente a configuração para desativar a verificação SSL
-# git.cmd.GitConfigParser().set("http", "sslVerify", "false")
+import conversor_certificado
 
 # Classe de progresso personalizada para acompanhar o progresso do clone
 class CloneProgress(git.remote.RemoteProgress):
@@ -89,7 +70,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     repo_url = sys.argv[1]
-    clone_path = sys.argv[2]
+    clone_path = sys.argv[2]  # Corrigido aqui para obter o caminho correto do repositório
     branch_name = sys.argv[3] if len(sys.argv) >= 4 else None
     git_username = sys.argv[4] if len(sys.argv) >= 5 else None
     git_password = sys.argv[5] if len(sys.argv) >= 6 else None
