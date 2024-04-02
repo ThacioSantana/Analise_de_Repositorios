@@ -9,6 +9,15 @@ class CloneProgress(git.remote.RemoteProgress):
         if message:
             print(message)
 
+def init_repository(repo_path):
+    try:
+        repo = git.Repo.init(repo_path)
+        print("Repositório Git inicializado com sucesso!")
+        return repo
+    except git.exc.GitCommandError as e:
+        print(f"Erro ao inicializar o repositório Git: {e}")
+        return None
+
 def clone_repository(repo_url, clone_path, use_ssh=False):
     try:
         if use_ssh:
@@ -50,7 +59,21 @@ def store_data_to_txt(data, output_file):
     except Exception as e:
         print(f"Erro ao armazenar os dados no arquivo: {e}")
 
+def is_git_repository(path):
+    try:
+        git.Repo(path, search_parent_directories=True)
+        return True
+    except git.exc.InvalidGitRepositoryError:
+        return False
+
 def main(repo_url, clone_path, branch_name=None, git_username=None, git_password=None, use_ssh=False):
+    # Verificar se o diretório já é um repositório Git
+    if is_git_repository(clone_path):
+        print("O diretório já é um repositório Git.")
+    else:
+        # Inicializar o repositório Git se o diretório de clonagem ainda não for um repositório Git
+        init_repository(clone_path)
+
     # Clonar o repositório
     repo = clone_repository(repo_url, clone_path, use_ssh)
     
@@ -68,6 +91,7 @@ def main(repo_url, clone_path, branch_name=None, git_username=None, git_password
             
             # Fazer push para o repositório
             push_to_repository(repo, branch_name, git_username, git_password)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3 or len(sys.argv) > 8:
