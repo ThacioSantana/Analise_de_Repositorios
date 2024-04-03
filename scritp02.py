@@ -1,10 +1,19 @@
 import os
-import re
+import uuid
 import subprocess
+import re
 
 def fetch_repository(url, destination):
-    # Clone o repositório
-    subprocess.run(["git", "clone", url, destination])
+    # Cria um novo diretório com um nome único para clonar o repositório
+    unique_destination = os.path.join(destination, str(uuid.uuid4()))
+    os.makedirs(unique_destination, exist_ok=True)
+    
+    # Define as variáveis de ambiente para aceitar certificados SSL autoassinados
+    os.environ['GIT_SSL_NO_VERIFY'] = 'true'
+    os.environ['GIT_SSL_CAINFO'] = '/caminho/para/o/arquivo/ca-bundle.pem'  # Substitua pelo caminho correto para o arquivo ca-bundle.pem
+
+    # Clone o repositório usando o autenticação do Git
+    subprocess.run(["git", "clone", url, unique_destination])
 
 def search_and_extract_code(directory):
     # Verifica se o diretório existe
@@ -54,10 +63,11 @@ def search_and_extract_code(directory):
 if __name__ == "__main__":
     # Solicita o URL do repositório
     repository_url = input("Digite a URL do repositório: ")
-    # Solicita o diretório de destino
-    destination_dir = input("Digite o diretório de destino para clonar o repositório: ")
+    # Define o diretório base onde o repositório será clonado
+    base_directory = input("Digite o diretório base para clonar o repositório: ")
+
     # Clona o repositório
-    fetch_repository(repository_url, destination_dir)
+    fetch_repository(repository_url, base_directory)
 
     # Executa a busca e extração de código
-    search_and_extract_code(destination_dir)
+    search_and_extract_code(base_directory)
