@@ -2,18 +2,20 @@ import os
 import uuid
 import subprocess
 import re
+from datetime import datetime
 
 def fetch_repository(url, destination):
-    # Cria um novo diretório com um nome único para clonar o repositório
+    # Cria um novo diretório com a data e hora da criação para clonar o repositório
+    current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     unique_destination = os.path.join(destination, str(uuid.uuid4()))
     os.makedirs(unique_destination, exist_ok=True)
     
-    # Define as variáveis de ambiente para aceitar certificados SSL autoassinados
+    # Define as variáveis de ambiente para desativar a verificação de SSL do Git
     os.environ['GIT_SSL_NO_VERIFY'] = 'true'
-    os.environ['GIT_SSL_CAINFO'] = '/caminho/para/o/arquivo/ca-bundle.pem'  # Substitua pelo caminho correto para o arquivo ca-bundle.pem
 
-    # Clone o repositório usando o autenticação do Git
+    # Clone o repositório usando a autenticação do Git
     subprocess.run(["git", "clone", url, unique_destination])
+
 
 def search_and_extract_code(directory):
     # Verifica se o diretório existe
