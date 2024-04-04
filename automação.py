@@ -16,8 +16,8 @@ def fetch_repository(url, destination):
     repository_dir = os.path.join(destination, repository_name)
     os.makedirs(repository_dir, exist_ok=True)
     
-    # Clone o repositório usando a autenticação do Git
-    subprocess.run(["git", "clone", url, repository_dir])
+    # Clone o repositório usando a autenticação do Git e desativando a verificação SSL
+    subprocess.run(["git", "clone", "--config", "http.sslVerify=false", url, repository_dir])
 
     # Gera o relatório para o repositório clonado
     generate_report(repository_dir)
@@ -59,8 +59,8 @@ def generate_report(directory):
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
     repository_urls = [
-        "https://github.com/ThacioSantana/Site-de-busca-de-produtos",
-        "https://github.com/ThacioSantana/encurtador-de-links",
+        "https://repositorios.banese.com.br/Seac/adc-geral",
+        "https://repositorios.banese.com.br/Seac/adc-neurotech",
     ]
 
     # Define o diretório base onde os repositórios serão clonados
