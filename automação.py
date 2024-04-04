@@ -33,7 +33,7 @@ def generate_report(directory):
     keywords = ['pwd', 'usr', 'username', 'password', 'usuario', 'senha', 'UserSecret', 'Catalog']
 
     # Abre o arquivo do relatório para escrita
-    with open(report_path, 'w') as report_file:
+    with open(report_path, 'w', encoding='utf-8') as report_file:
         # Loop através das extensões e palavras-chave
         for ext in extensions:
             for keyword in keywords:
@@ -43,7 +43,7 @@ def generate_report(directory):
                     for file in files:
                         if file.endswith(ext):
                             file_path = os.path.join(root, file)
-                            with open(file_path, 'r') as f:
+                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                                 for line in f:
                                     if re.search(keyword, line):
                                         found_lines.append(f"{file_path}: {line.strip()}")
@@ -58,7 +58,10 @@ def generate_report(directory):
 
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
-    repository_urls = []
+    repository_urls = [
+        "https://repositorios.banese.com.br/Seac/adc-geral",
+        "https://repositorios.banese.com.br/Seac/adc-neurotech",
+    ]
 
     # Define o diretório base onde os repositórios serão clonados
     base_directory = input("Digite o diretório base para clonar os repositórios: ")
