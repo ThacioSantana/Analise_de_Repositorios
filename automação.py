@@ -58,10 +58,7 @@ def generate_report(directory):
 
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
-    repository_urls = [
-        "https://repositorios.banese.com.br/Seac/adc-geral",
-        "https://repositorios.banese.com.br/Seac/adc-neurotech",
-    ]
+    repository_urls = []
 
     # Define o diretório base onde os repositórios serão clonados
     base_directory = input("Digite o diretório base para clonar os repositórios: ")
