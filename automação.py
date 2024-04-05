@@ -32,6 +32,9 @@ def generate_report(directory):
     # Lista de palavras-chave para procurar nas linhas dos arquivos
     keywords = ['pwd', 'usr', 'username', 'password', 'usuario', 'senha', 'UserSecret', 'Catalog']
 
+    # Variável para acompanhar se foram encontradas ocorrências
+    occurrences_found = False
+
     # Abre o arquivo do relatório para escrita
     with open(report_path, 'w', encoding='utf-8') as report_file:
         # Loop através das extensões e palavras-chave
@@ -47,6 +50,7 @@ def generate_report(directory):
                                 for line in f:
                                     if re.search(keyword, line):
                                         found_lines.append(f"{file_path}: {line.strip()}")
+                                        occurrences_found = True
 
                 # Escreve as linhas encontradas no relatório
                 if found_lines:
@@ -54,13 +58,16 @@ def generate_report(directory):
                     report_file.write('\n'.join(found_lines))
                     report_file.write('\n')
 
-    print(f"Relatório gerado com sucesso em {report_path}")
+    if not occurrences_found:
+        print("Nenhuma ocorrência encontrada para as palavras-chave nos arquivos.")
+        os.remove(report_path)
+    else:
+        print(f"Relatório gerado com sucesso em {report_path}")
 
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
     repository_urls = [
-        "https://repositorios.banese.com.br/Seac/adc-geral",
-        "https://repositorios.banese.com.br/Seac/adc-neurotech",
+        "https://github.com/ThacioSantana/encurtador-de-links"
     ]
 
     # Define o diretório base onde os repositórios serão clonados
