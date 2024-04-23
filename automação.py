@@ -1,7 +1,6 @@
 import os
 import subprocess
 import re
-from datetime import datetime
 
 def fetch_repositories(urls, destination):
     # Clona cada repositório
