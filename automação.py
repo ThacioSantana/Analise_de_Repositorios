@@ -2,6 +2,14 @@ import os
 import subprocess
 import re
 
+class CloneError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 def fetch_repositories(urls, destination):
     """
     Clona uma lista de repositórios Git a partir das URLs fornecidas para o diretório de destino.
@@ -11,7 +19,10 @@ def fetch_repositories(urls, destination):
         destination (str): O diretório onde os repositórios serão clonados.
     """
     for url in urls:
-        fetch_repository(url, destination)
+        try:
+            fetch_repository(url, destination)
+        except CloneError as e:
+            print(f"Erro ao clonar o repositório: {e}")
 
 def fetch_repository(url, destination):
     """
@@ -21,17 +32,23 @@ def fetch_repository(url, destination):
         url (str): A URL do repositório a ser clonado.
         destination (str): O diretório onde o repositório será clonado.
     """
-    repository_name = os.path.splitext(os.path.basename(url))[0]  # Extrai o nome do repositório da URL
-    
-    # Cria o diretório para o repositório clonado
-    repository_dir = os.path.join(destination, repository_name)
-    os.makedirs(repository_dir, exist_ok=True)
-    
-    # Clone o repositório usando o Git, desativando a verificação SSL
-    subprocess.run(["git", "clone", "--config", "http.sslVerify=false", url, repository_dir])
-
-    # Gera um relatório para o repositório clonado
-    generate_report(repository_dir)
+    try:
+        repository_name = os.path.splitext(os.path.basename(url))[0]  # Extrai o nome do repositório da URL
+        
+        # Cria o diretório para o repositório clonado
+        repository_dir = os.path.join(destination, repository_name)
+        os.makedirs(repository_dir, exist_ok=True)
+        
+        # Clone o repositório usando o Git, desativando a verificação SSL
+        subprocess.run(["git", "clone", "--config", "http.sslVerify=false", url, repository_dir], check=True)
+        
+        # Gera um relatório para o repositório clonado
+        generate_report(repository_dir)
+        
+    except OSError as e:
+        print(f"Erro ao criar o diretório do repositório: {e}")
+    except subprocess.CalledProcessError as e:
+        print(f"Erro ao clonar o repositório: {e}")
 
 def generate_report(directory):
     """
@@ -48,39 +65,43 @@ def generate_report(directory):
     
     occurrences_found = False  # Variável para acompanhar se foram encontradas ocorrências
     
-    # Abre o arquivo de relatório para escrita
-    with open(report_path, 'w', encoding='utf-8') as report_file:
-        # Loop através das extensões e palavras-chave
-        for ext in extensions:
-            for keyword in keywords:
-                found_lines = []  # Lista para armazenar linhas encontradas com as palavras-chave
-                # Procura por arquivos com a extensão atual e extrai as linhas com as palavras-chave
-                for root, dirs, files in os.walk(directory):
-                    for file in files:
-                        if file.endswith(ext):
-                            file_path = os.path.join(root, file)
-                            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                                for line in f:
-                                    if re.search(keyword, line):
-                                        found_lines.append(f"{file_path}: {line.strip()}")
-                                        occurrences_found = True
-                # Escreve as linhas encontradas no relatório
-                if found_lines:
-                    report_file.write(f"\nArquivos com extensão {ext} e palavra-chave '{keyword}':\n")
-                    report_file.write('\n'.join(found_lines))
-                    report_file.write('\n')
+    try:
+        # Abre o arquivo de relatório para escrita
+        with open(report_path, 'w', encoding='utf-8') as report_file:
+            # Loop através das extensões e palavras-chave
+            for ext in extensions:
+                for keyword in keywords:
+                    found_lines = []  # Lista para armazenar linhas encontradas com as palavras-chave
+                    # Procura por arquivos com a extensão atual e extrai as linhas com as palavras-chave
+                    for root, dirs, files in os.walk(directory):
+                        for file in files:
+                            if file.endswith(ext):
+                                file_path = os.path.join(root, file)
+                                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                                    for line in f:
+                                        if re.search(keyword, line):
+                                            found_lines.append(f"{file_path}: {line.strip()}")
+                                            occurrences_found = True
+                    # Escreve as linhas encontradas no relatório
+                    if found_lines:
+                        report_file.write(f"\nArquivos com extensão {ext} e palavra-chave '{keyword}':\n")
+                        report_file.write('\n'.join(found_lines))
+                        report_file.write('\n')
+        
+        # Se não foram encontradas ocorrências, exclui o arquivo de relatório
+        if not occurrences_found:
+            print("Nenhuma ocorrência encontrada para as palavras-chave nos arquivos.")
+            os.remove(report_path)
+        else:
+            print(f"Relatório gerado com sucesso em {report_path}")
     
-    # Se não foram encontradas ocorrências, exclui o arquivo de relatório
-    if not occurrences_found:
-        print("Nenhuma ocorrência encontrada para as palavras-chave nos arquivos.")
-        os.remove(report_path)
-    else:
-        print(f"Relatório gerado com sucesso em {report_path}")
+    except OSError as e:
+        raise CloneError(f"Erro ao gerar o relatório: {e}")
 
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
     repository_urls = [
-        "Lista de Repositórios "
+"Lista de Repositorios"
     ]
 
     # Define o diretório base onde os repositórios serão clonados
