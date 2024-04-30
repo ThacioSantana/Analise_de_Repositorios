@@ -23,6 +23,8 @@ def fetch_repositories(urls, destination):
             fetch_repository(url, destination)
         except CloneError as e:
             print(f"Erro ao clonar o repositório: {e}")
+        except Exception as e:
+            print(f"Erro inesperado ao clonar o repositório: {e}")
 
 def fetch_repository(url, destination):
     """
@@ -46,9 +48,11 @@ def fetch_repository(url, destination):
         generate_report(repository_dir)
         
     except OSError as e:
-        print(f"Erro ao criar o diretório do repositório: {e}")
+        raise CloneError(f"Erro ao criar o diretório do repositório: {e}")
     except subprocess.CalledProcessError as e:
-        print(f"Erro ao clonar o repositório: {e}")
+        raise CloneError(f"Erro ao clonar o repositório: {e}")
+    except Exception as e:
+        raise CloneError(f"Erro inesperado ao clonar o repositório: {e}")
 
 def generate_report(directory):
     """
@@ -101,11 +105,14 @@ def generate_report(directory):
 if __name__ == "__main__":
     # URLs dos repositórios como uma lista
     repository_urls = [
-"Lista de Repositorios"
+        "Lista de Repositorios"
     ]
 
-    # Define o diretório base onde os repositórios serão clonados
-    base_directory = input("Digite o diretório base para clonar os repositórios: ")
+    try:
+        # Define o diretório base onde os repositórios serão clonados
+        base_directory = input("Digite o diretório base para clonar os repositórios: ")
 
-    # Clona os repositórios e gera os relatórios para cada um
-    fetch_repositories(repository_urls, base_directory)
+        # Clona os repositórios e gera os relatórios para cada um
+        fetch_repositories(repository_urls, base_directory)
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
