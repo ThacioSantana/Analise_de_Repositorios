@@ -9,7 +9,6 @@ class CloneError(Exception):
     def __str__(self):
         return self.message
 
-
 def fetch_repositories(urls, destination):
     """
     Clona uma lista de repositórios Git a partir das URLs fornecidas para o diretório de destino.
@@ -20,6 +19,13 @@ def fetch_repositories(urls, destination):
     """
     for url in urls:
         try:
+            # Verificar se a URL começa com "https://" e termina com ".git"
+            if not (url.startswith("https://") and url.endswith(".git")):
+                raise CloneError(f"A URL '{url}' não está no formato correto.")
+            
+            print(url)  # Imprime a URL
+            print()  # Imprime uma linha em branco para separar as URLs
+            
             fetch_repository(url, destination)
         except CloneError as e:
             print(f"Erro ao clonar o repositório: {e}")
@@ -101,18 +107,26 @@ def generate_report(directory):
     
     except OSError as e:
         raise CloneError(f"Erro ao gerar o relatório: {e}")
+    except Exception as e:
+        raise CloneError(f"Erro inesperado ao gerar o relatório: {e}")
 
 if __name__ == "__main__":
-    # URLs dos repositórios como uma lista
-    repository_urls = [
-        "Lista de Repositorios"
-    ]
-
     try:
         # Define o diretório base onde os repositórios serão clonados
         base_directory = input("Digite o diretório base para clonar os repositórios: ")
 
+        # Verifica se o diretório base existe
+        if not os.path.exists(base_directory):
+            raise CloneError("O diretório base especificado não existe.")
+
+        # URLs dos repositórios como uma lista
+        repository_urls = [
+            "Lista de Repositorios"
+        ]
+
         # Clona os repositórios e gera os relatórios para cada um
         fetch_repositories(repository_urls, base_directory)
+    except CloneError as e:
+        print(f"Erro: {e}")
     except Exception as e:
         print(f"Erro inesperado: {e}")
