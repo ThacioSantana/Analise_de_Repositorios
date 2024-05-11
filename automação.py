@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
         # URLs dos repositórios como uma lista
         repository_urls = [
-            "https://github.com/ThacioSantana/Analise_de_Repositorios/tree/main"
+            "Lista de Repositórios"
         ]
 
         # Clona os repositórios e gera os relatórios para cada um
