@@ -32,6 +32,13 @@ def fetch_repositories(urls, destination):
         except Exception as e:
             print(f"Erro inesperado ao clonar o repositório: {e}")
 
+    # Após o término da clonagem de todos os repositórios, limpa as credenciais em cache do Git
+    try:
+        subprocess.run(["git", "credential-cache", "--exit"])
+        print("Credenciais em cache do Git foram removidas.")
+    except Exception as e:
+        print(f"Erro ao limpar as credenciais em cache do Git: {e}")
+
 def fetch_repository(url, destination):
     """
     Clona um repositório Git a partir de uma URL para o diretório de destino.
@@ -121,7 +128,7 @@ if __name__ == "__main__":
 
         # URLs dos repositórios como uma lista
         repository_urls = [
-            "Lista de Repositorios"
+            "https://github.com/ThacioSantana/Analise_de_Repositorios/tree/main"
         ]
 
         # Clona os repositórios e gera os relatórios para cada um
