@@ -1,5 +1,3 @@
-[[_TOC_]]
-
 | TTP ID |  |
 |--|--|
 | TTP Nome: | Script para automatizar a clonagem de repositórios Git e verificar automaticamente se eles contêm credenciais sensíveis nos arquivos |
