@@ -1,6 +1,6 @@
-import os
 import subprocess
 import re
+import os
 
 class CloneError(Exception):
     def __init__(self, message):
@@ -8,6 +8,19 @@ class CloneError(Exception):
 
     def __str__(self):
         return self.message
+
+def handle_error(error, context=""):
+    """
+    Lida com erros levantados durante a execução do programa.
+    
+    Parâmetros:
+        error (Exception): A exceção levantada.
+        context (str): Contexto opcional para fornecer detalhes adicionais sobre o erro.
+    """
+    if isinstance(error, CloneError):
+        print(f"Erro ao {context}: {error}")
+    else:
+        print(f"Erro inesperado ao {context}: {error}")
 
 def fetch_repositories(urls, destination):
     """
@@ -27,17 +40,15 @@ def fetch_repositories(urls, destination):
             print()  # Imprime uma linha em branco para separar as URLs
             
             fetch_repository(url, destination)
-        except CloneError as e:
-            print(f"Erro ao clonar o repositório: {e}")
         except Exception as e:
-            print(f"Erro inesperado ao clonar o repositório: {e}")
+            handle_error(e, context=f"clonar o repositório '{url}'")
 
     # Após o término da clonagem de todos os repositórios, limpa as credenciais em cache do Git
     try:
         subprocess.run(["git", "credential-cache", "--exit"])
         print("Credenciais em cache do Git foram removidas.")
     except Exception as e:
-        print(f"Erro ao limpar as credenciais em cache do Git: {e}")
+        handle_error(e, context="limpar as credenciais em cache do Git")
 
 def fetch_repository(url, destination):
     """
@@ -54,18 +65,14 @@ def fetch_repository(url, destination):
         repository_dir = os.path.join(destination, repository_name)
         os.makedirs(repository_dir, exist_ok=True)
         
-        # Clone o repositório usando o Git, desativando a verificação SSL
+        # Clona o repositório usando o Git, desativando a verificação SSL
         subprocess.run(["git", "clone", "--config", "http.sslVerify=false", url, repository_dir], check=True)
         
         # Gera um relatório para o repositório clonado
         generate_report(repository_dir)
         
-    except OSError as e:
-        raise CloneError(f"Erro ao criar o diretório do repositório: {e}")
-    except subprocess.CalledProcessError as e:
-        raise CloneError(f"Erro ao clonar o repositório: {e}")
     except Exception as e:
-        raise CloneError(f"Erro inesperado ao clonar o repositório: {e}")
+        handle_error(e, context=f"clonar o repositório '{url}'")
 
 def generate_report(directory):
     """
@@ -112,10 +119,8 @@ def generate_report(directory):
         else:
             print(f"Relatório gerado com sucesso em {report_path}")
     
-    except OSError as e:
-        raise CloneError(f"Erro ao gerar o relatório: {e}")
     except Exception as e:
-        raise CloneError(f"Erro inesperado ao gerar o relatório: {e}")
+        handle_error(e, context="gerar o relatório")
 
 if __name__ == "__main__":
     try:
@@ -133,7 +138,5 @@ if __name__ == "__main__":
 
         # Clona os repositórios e gera os relatórios para cada um
         fetch_repositories(repository_urls, base_directory)
-    except CloneError as e:
-        print(f"Erro: {e}")
     except Exception as e:
-        print(f"Erro inesperado: {e}")
+        handle_error(e, context="executar o programa principal")
