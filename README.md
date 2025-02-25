@@ -1,9 +1,3 @@
-| TTP ID |  |
-|--|--|
-| TTP Nome: | Script para automatizar a clonagem de repositórios Git e verificar automaticamente se eles contêm credenciais sensíveis nos arquivos |
-| Plataformas | Linux, Windows, Mac |
-
-
 
 # **Definição**
 O código é um script em Python que automatiza o processo de clonagem de repositórios Git a partir de URLs fornecidas e gera relatórios baseados nos arquivos desses repositórios. Ele realiza as seguintes etapas:
