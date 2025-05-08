@@ -4,7 +4,7 @@ Este projeto contém duas versões de um script Python que automatiza a clonagem
 
 ---
 
-## 📊 Versão 2: `repositorio_analise.py` (Atual)
+## 📊 Versão 2: `repositorio_analise.py`
 
 ### 🔄 Funcionalidades:
 1. **Clonagem paralela** de vários repositórios a partir de uma lista de URLs.
@@ -35,7 +35,7 @@ config.json, 12, "password": "admin123"
 
 ---
 
-## 🔄 Versão 1: `automacao_v1.py` (Antiga)
+## 🔄 Versão 1: `automacao_v1.py`
 
 ### 🔧 Funcionalidades:
 1. Clonagem sequencial de repositórios.
