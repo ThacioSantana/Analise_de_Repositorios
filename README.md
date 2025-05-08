@@ -1,37 +1,76 @@
+# Repositório: Análise de Repositórios Git
 
-# **Definição**
-O código é um script em Python que automatiza o processo de clonagem de repositórios Git a partir de URLs fornecidas e gera relatórios baseados nos arquivos desses repositórios. Ele realiza as seguintes etapas:
+Este projeto contém duas versões de um script Python que automatiza a clonagem de repositórios Git e a análise de arquivos em busca de credenciais sensíveis. Os resultados são gerados em relatórios CSV.
 
-**1 - Clonagem de Repositórios:**
-- Recebe uma lista de URLs de repositórios Git e um diretório de destino.
-- Para cada URL na lista, clona o repositório correspondente para o diretório de destino.
+---
 
-**2 - Geração de Relatórios:**
-- Após a clonagem bem-sucedida de um repositório, analisa os arquivos do repositório em busca de credenciais sensíveis, como nomes de usuário e senhas.
-- Gera um relatório listando os arquivos que contêm essas credenciais sensíveis.
+## 📊 Versão 2: `repositorio_analise.py` (Atual)
 
-**3 - Saída do Relatório:**
-- Se nenhuma ocorrência de credenciais sensíveis for encontrada nos arquivos do repositório, o relatório não é gerado.
-- Caso contrário, o relatório é escrito em um arquivo de texto no diretório do repositório.
+### 🔄 Funcionalidades:
+1. **Clonagem paralela** de vários repositórios a partir de uma lista de URLs.
+2. **Análise de arquivos** por palavras-chave sensíveis: `senha`, `password`, `token`, etc.
+3. **Relatório CSV** gerado para cada repositório com as ocorrências encontradas.
+4. **Barra de progresso** visual usando `tqdm`.
+5. **Suporte a entradas por argumentos:**
+   - URLs diretas via `-u`
+   - Arquivo `.txt` com URLs via `-f`
+   - Diretório de destino via `-d`
+6. **Registro de logs** estruturados em `repositorio_analise.log`
 
-**4 - Execução Principal:**
-- Ao ser executado, o script solicita ao usuário o diretório base onde os repositórios serão clonados.
-- Em seguida, clona os repositórios e gera os relatórios para análise posterior.
+### 🔧 Exemplo de uso:
+```bash
+python repositorio_analise.py -d ./repositorios -f repos.txt
+```
 
-**5 - Limpeza de cache:**
-- Após a clonagem de todos os repositórios, limpa as credenciais em cache do Git.
+### 🔍 Palavras-chave e extensões analisadas:
+- **Palavras-chave:** `pwd`, `usr`, `username`, `password`, `usuario`, `senha`, `UserSecret`, `Catalog`, `token`
+- **Extensões de arquivo:** `.json`, `.xml`, `.config`, `.env`
 
-**6 - Tratamento de Erro:**
-- O código lida com erros como diretório inexistente, erros de clonagem e erros inesperados, usando exceções personalizadas.
+### 🔒 Exemplo de relatório:
+```
+Arquivo, Linha, Conteúdo
+config.json, 12, "password": "admin123"
+.env, 3, TOKEN=abcdef12345
+```
 
-# **Referências**
-**Python**: 
-https://python-forum.io/
-https://pypi.org/
-https://docs.python.org/pt-br/3/library/os.html
-https://docs.python.org/3/library/subprocess.html
-https://docs.python.org/3/library/re.html
+---
 
-**Git**
-https://git-scm.com/doc
-https://git-scm.com/
+## 🔄 Versão 1: `automacao_v1.py` (Antiga)
+
+### 🔧 Funcionalidades:
+1. Clonagem sequencial de repositórios.
+2. Gera relatórios em arquivo `.txt` com as ocorrências.
+3. Palavras-chave e extensões codificadas no script.
+4. Solicita diretório via `input()`.
+5. Limpa cache de credenciais Git após execução.
+6. Usa exceções personalizadas para tratamento de erro.
+
+---
+
+## 📖 Referências
+
+### Python
+- https://docs.python.org/3/
+- https://pypi.org/project/tqdm/
+- https://docs.python.org/3/library/argparse.html
+- https://docs.python.org/3/library/os.html
+- https://docs.python.org/3/library/subprocess.html
+- https://docs.python.org/3/library/re.html
+- https://docs.python.org/3/library/concurrent.futures.html
+- https://docs.python.org/3/library/logging.html
+- https://docs.python.org/3/library/csv.html
+
+### Git
+- https://git-scm.com/doc
+- https://git-scm.com/
+
+---
+
+## 📄 Estrutura Sugerida
+```
+/
+├── repositorio_analise.py     # Versão atual (v2)
+├── automacao_v1.py            # Versão anterior (v1)
+├── repos.txt                  # Lista de URLs de repositórios
+├── repositorio_analise.log    # Log da execução
+└── /repositorios              # Diretório com repositórios clonados
