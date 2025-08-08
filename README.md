@@ -1,64 +1,71 @@
-# Repositório: Análise de Repositórios Git
+# 🔍 Análise de Repositórios Git
 
-Este projeto contém duas versões de um script Python que automatiza a clonagem de repositórios Git e a análise de arquivos em busca de credenciais sensíveis. Os resultados são gerados em relatórios CSV.
-
----
-
-## 📊 Versão 2: `repositorio_analise.py`
-
-### 🔄 Funcionalidades:
-1. **Clonagem paralela** de vários repositórios a partir de uma lista de URLs.
-2. **Análise de arquivos** por palavras-chave sensíveis: `senha`, `password`, `token`, etc.
-3. **Relatório CSV** gerado para cada repositório com as ocorrências encontradas.
-4. **Barra de progresso** visual usando `tqdm`.
-5. **Suporte a entradas por argumentos:**
-   - URLs diretas via `-u`
-   - Arquivo `.txt` com URLs via `-f`
-   - Diretório de destino via `-d`
-6. **Registro de logs** estruturados em `repositorio_analise.log`
-
-### 🔧 Exemplo de uso:
-```bash
-python repositorio_analise.py -d ./repositorios -f repos.txt
-```
-
-### 🔍 Palavras-chave e extensões analisadas:
-- **Palavras-chave:** `pwd`, `usr`, `username`, `password`, `usuario`, `senha`, `UserSecret`, `Catalog`, `token`
-- **Extensões de arquivo:** `.json`, `.xml`, `.config`, `.env`
-
-### 🔒 Exemplo de relatório:
-```
-Arquivo, Linha, Conteúdo
-config.json, 12, "password": "admin123"
-.env, 3, TOKEN=abcdef12345
-```
+Este projeto contém um script Python para clonar repositórios Git, analisar arquivos em busca de credenciais sensíveis (como senhas e tokens), e gerar relatórios com os resultados.
 
 ---
 
-## 🔄 Versão 1: `automacao_v1.py`
+## 🚀 Funcionalidades
 
-### 🔧 Funcionalidades:
-1. Clonagem sequencial de repositórios.
-2. Gera relatórios em arquivo `.txt` com as ocorrências.
-3. Palavras-chave e extensões codificadas no script.
-4. Solicita diretório via `input()`.
-5. Limpa cache de credenciais Git após execução.
-6. Usa exceções personalizadas para tratamento de erro.
+- 📦 Clonagem de múltiplos repositórios (lista definida no código).
+- 🔍 Busca por palavras-chave sensíveis como `senha`, `password`, `UserSecret`, entre outras.
+- 🧠 Detecção automática de tokens **JWT** via regex.
+- 📄 Geração de relatório `.txt` para cada repositório analisado.
+- 📊 Geração de resumo em `.csv`, formatado corretamente para Excel.
+- 🧹 Após a análise, remove os arquivos do repositório clonado, mantendo apenas o relatório.
+- 📌 Tratamento de erros centralizado e log completo em `erros.log`.
 
 ---
+
+## 🧑‍💻 Como usar
+
+1. Abra o terminal.
+2. Execute o script com Python:
+   ```bash
+   python analise_repositorios.py
+   ```
+3. Digite o caminho do diretório onde deseja clonar os repositórios.
+4. O script irá clonar, analisar e gerar os relatórios automaticamente.
+
+> ✅ A lista de repositórios está definida diretamente no código-fonte, dentro da variável `repository_urls`.
+
+---
+
+## 🔍 Palavras-chave e extensões analisadas
+
+- **Palavras-chave buscadas:**
+  ```
+  pwd, usr, username, password, usuario, senha, UserSecret, Catalog
+  ```
+
+- **Extensões de arquivos analisadas:**
+  ```
+  .json, .xml, .config
+  ```
+
+- **Tokens JWT detectados** com regex:
+  ```
+  eyJ[a-zA-Z0-9_-]+.[a-zA-Z0-9_-]+.[a-zA-Z0-9_-]+
+  ```
+
+---
+
+## 📁 Saída
+
+- `relatorio.txt` → Gerado dentro de cada repositório, com linhas que contêm dados sensíveis.
+- `relatorio_resumo.csv` → Resumo com contagem por repositório, compatível com Excel.
+- `erros.log` → Registro de exceções e falhas encontradas.
 
 ## 📖 Referências
 
 ### Python
 - https://docs.python.org/3/
-- https://pypi.org/project/tqdm/
-- https://docs.python.org/3/library/argparse.html
 - https://docs.python.org/3/library/os.html
 - https://docs.python.org/3/library/subprocess.html
 - https://docs.python.org/3/library/re.html
-- https://docs.python.org/3/library/concurrent.futures.html
-- https://docs.python.org/3/library/logging.html
 - https://docs.python.org/3/library/csv.html
+- https://docs.python.org/3/library/shutil.html
+- https://docs.python.org/3/library/logging.html
+- https://docs.python.org/3/library/functools.html
 
 ### Git
 - https://git-scm.com/doc
